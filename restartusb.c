@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <usb.h>
 
-int main(void) {
+int main(int argc, char *argv[]) {
   struct usb_bus *busses;
   usb_init();
   usb_find_busses();
@@ -34,12 +34,26 @@ int main(void) {
       char buf[1024];
       junk = usb_open ( dev );
       usb_get_string_simple(junk,2,buf,1023);
-      if ( junk == NULL ){
-        printf("Can't open %p (%s)\n", dev, buf );
-      } else {
-        val = usb_reset(junk);
-        printf( "reset %p %d (%s)\n", dev, val, buf );
+      
+      switch(argc) {
+      case 1:
+        if ( junk == NULL ) {
+          printf("Can't open %p (%s)\n", dev, buf );
+        } else if (strcmp(buf,"HD Pro Webcam C920")==0) {
+          val = usb_reset(junk);
+          printf( "reset %p %d (%s)\n", dev, val, buf );
+        }
+	break;
+
+      default:
+        if ( junk == NULL ){
+          printf("Can't open %p (%s)\n", dev, buf );
+        } else {
+          val = usb_reset(junk);
+          printf( "reset %p %d (%s)\n", dev, val, buf );
+        }
       }
+
       usb_close(junk);
     }
   }
